@@ -1,9 +1,11 @@
 package com.application.emoji.redditapp;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.application.emoji.redditapp.model.Feed;
@@ -72,24 +74,40 @@ public class MainActivity extends AppCompatActivity {
 
                     int lastPosition = postContent.size() - 1;
 
-                    posts.add(new Post(
-                            entries.get(i).getTitle(),
-                            entries.get(i).getAuthor().getName(),
-                            entries.get(i).getUpdated(),
-                            postContent.get(0),
-                            postContent.get(lastPosition)
-                    ));
+                    try{
+                        posts.add(new Post(
+                                entries.get(i).getTitle(),
+                                entries.get(i).getAuthor().getName(),
+                                entries.get(i).getUpdated(),
+                                postContent.get(0),
+                                postContent.get(lastPosition)
+                        ));
+                    }catch (NullPointerException e){
+                        posts.add(new Post(
+                                entries.get(i).getTitle(),
+                                "None",
+                                entries.get(i).getUpdated(),
+                                postContent.get(0),
+                                postContent.get(lastPosition)
+                        ));
+                        Log.e(TAG, "onResponse: NullPointerException: " + e.getMessage() );
+                    }
                 }
 
-                for(int j = 0; j < posts.size(); j++)
-                {
-                    Log.d(TAG, "onResponse: \n" +
-                                "PostURL: " + posts.get(j).getPostURL() + "\n" +
-                                "ThumbnailURL: " + posts.get(j).getThumbnailURL() + "\n" +
-                                "Title: " + posts.get(j).getTitle() + "\n" +
-                                "Author: " + posts.get(j).getAuthor() + "\n" +
-                                "Updated: " + posts.get(j).getDate_updated() + "\n" );
-                }
+//                for(int j = 0; j < posts.size(); j++)
+//                {
+//                    Log.d(TAG, "onResponse: \n" +
+//                                "PostURL: " + posts.get(j).getPostURL() + "\n" +
+//                                "ThumbnailURL: " + posts.get(j).getThumbnailURL() + "\n" +
+//                                "Title: " + posts.get(j).getTitle() + "\n" +
+//                                "Author: " + posts.get(j).getAuthor() + "\n" +
+//                                "Updated: " + posts.get(j).getDate_updated() + "\n" );
+//                }
+
+                ListView listView = (ListView) findViewById(R.id.listView);
+                CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.card_layout_main, posts);
+                listView.setAdapter(customListAdapter);
+
             }
             @Override
             public void onFailure(Call<Feed> call, Throwable t) {
