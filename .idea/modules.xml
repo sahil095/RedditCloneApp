@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\Users\Sahil\AndroidStudioProjects\RedditCloneApp\RedditApp.iml" filepath="C:\Users\Sahil\AndroidStudioProjects\RedditCloneApp\RedditApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/RedditCloneApp.iml" filepath="$PROJECT_DIR$/RedditCloneApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://C:\Users\Sahil\AndroidStudioProjects\RedditCloneApp\app\app.iml" filepath="C:\Users\Sahil\AndroidStudioProjects\RedditCloneApp\app\app.iml" />
     </modules>
   </component>
 </project>

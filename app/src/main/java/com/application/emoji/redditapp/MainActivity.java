@@ -3,8 +3,11 @@ package com.application.emoji.redditapp;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -25,11 +28,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private static final String BASE_URL = "https://www.reddit.com/r/";
+    private ArrayList<Post> posts ;
+//    private RecyclerView recyclerView;
+//    private RecyclerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        recyclerView = (RecyclerView) findViewById(R.id.recycleView);
+        posts = new ArrayList<>();
+
+//        LinearLayoutManager llm = new LinearLayoutManager(this);
+//        llm.setOrientation(LinearLayoutManager.VERTICAL);
+//        recyclerView.setLayoutManager(llm);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -50,11 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onResponse: entries: " + response.body().getEntries());
 
-//                Log.d(TAG, "onResponse: author: " + entries.get(0).getAuthor());
-//                Log.d(TAG, "onResponse: updated: " + entries.get(0).getUpdated());
-//                Log.d(TAG, "onResponse: title: " + entries.get(0).getTitle());
-
-                ArrayList<Post> posts = new ArrayList<Post>();
 
                 for (int i = 0; i < entries.size(); i++) {
                     ExtractXML extractXML1 = new ExtractXML(entries.get(i).getContent(), "<a href=");
@@ -107,13 +115,17 @@ public class MainActivity extends AppCompatActivity {
                 ListView listView = (ListView) findViewById(R.id.listView);
                 CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.card_layout_main, posts);
                 listView.setAdapter(customListAdapter);
-
+//                adapter = new RecyclerAdapter(MainActivity.this, posts);
+//                recyclerView.setAdapter(adapter);
             }
+
             @Override
             public void onFailure(Call<Feed> call, Throwable t) {
                 Log.e(TAG, "onFailure: Unable to Retrieve RSS: " + t.getMessage());
                 Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
+
 }

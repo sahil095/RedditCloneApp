@@ -68,7 +68,6 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         //sets up the image loader library
-        setupImageLoader();
 
         //get the persons information
         String title = getItem(position).getTitle();

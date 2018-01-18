@@ -34,6 +34,9 @@ dependencies {
                 exclude group : 'stax', module: 'stax'
             }
 
+    //RecyclerView
+    compile 'com.android.support:recyclerview-v7:26.+'
+
     //cardview
     compile 'com.android.support:cardview-v7:26.+'
 
