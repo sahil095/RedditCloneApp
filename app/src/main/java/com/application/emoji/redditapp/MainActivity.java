@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,7 +31,10 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private static final String BASE_URL = "https://www.reddit.com/r/";
-    private ArrayList<Post> posts ;
+    private Button btnRefreshFeed;
+    private EditText mFeedName;
+    private String currentFeed;
+
 //    private RecyclerView recyclerView;
 //    private RecyclerAdapter adapter;
 
@@ -37,13 +43,33 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        recyclerView = (RecyclerView) findViewById(R.id.recycleView);
-        posts = new ArrayList<>();
+        btnRefreshFeed = (Button) findViewById(R.id.btnRefresh);
+        mFeedName = (EditText) findViewById(R.id.etFeedName);
 
+        init();
+
+        btnRefreshFeed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String feedName = mFeedName.getText().toString();
+                if(!feedName.equals("")){
+                    currentFeed = feedName;
+                    init();
+                }
+                else
+                {
+                    init();
+                }
+            }
+        });
+
+//        recyclerView = (RecyclerView) findViewById(R.id.recycleView);
 //        LinearLayoutManager llm = new LinearLayoutManager(this);
 //        llm.setOrientation(LinearLayoutManager.VERTICAL);
 //        recyclerView.setLayoutManager(llm);
 
+    }
+    private void init(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(SimpleXmlConverterFactory.create())
@@ -51,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         FeedAPI feedAPI = retrofit.create(FeedAPI.class);
 
-        Call<Feed> call = feedAPI.getFeed();
+        Call<Feed> call = feedAPI.getFeed(currentFeed);
 
         call.enqueue(new Callback<Feed>() {
             @Override
@@ -63,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onResponse: entries: " + response.body().getEntries());
 
+                ArrayList<Post> posts = new ArrayList<>();
 
                 for (int i = 0; i < entries.size(); i++) {
                     ExtractXML extractXML1 = new ExtractXML(entries.get(i).getContent(), "<a href=");
@@ -125,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
 }
