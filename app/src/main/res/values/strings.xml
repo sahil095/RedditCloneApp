@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">RedditApp</string>
+    <string name="posts_url">posts_url</string>
+    <string name="posts_thumbnail">posts_thumbnail</string>
+    <string name="posts_author">posts_author</string>
+    <string name="posts_title">posts_title</string>
+    <string name="posts_updated">posts_updated</string>
 </resources>

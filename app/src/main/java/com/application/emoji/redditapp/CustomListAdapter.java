@@ -133,11 +133,11 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
                 }
                 @Override
                 public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                    holder.mProgressBar.setVisibility(view.VISIBLE);
+                    holder.mProgressBar.setVisibility(view.GONE);
                 }
                 @Override
                 public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                    holder.mProgressBar.setVisibility(view.VISIBLE);
+                    holder.mProgressBar.setVisibility(view.GONE);
                 }
                 @Override
                 public void onLoadingCancelled(String imageUri, View view) {

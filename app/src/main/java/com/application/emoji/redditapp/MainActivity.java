@@ -1,12 +1,14 @@
 package com.application.emoji.redditapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,8 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnRefreshFeed = (Button) findViewById(R.id.btnRefresh);
         mFeedName = (EditText) findViewById(R.id.etFeedName);
-
-        init();
 
         btnRefreshFeed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onResponse: entries: " + response.body().getEntries());
 
-                ArrayList<Post> posts = new ArrayList<>();
+                final ArrayList<Post> posts = new ArrayList<>();
 
                 for (int i = 0; i < entries.size(); i++) {
                     ExtractXML extractXML1 = new ExtractXML(entries.get(i).getContent(), "<a href=");
@@ -129,19 +129,24 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-//                for(int j = 0; j < posts.size(); j++)
-//                {
-//                    Log.d(TAG, "onResponse: \n" +
-//                                "PostURL: " + posts.get(j).getPostURL() + "\n" +
-//                                "ThumbnailURL: " + posts.get(j).getThumbnailURL() + "\n" +
-//                                "Title: " + posts.get(j).getTitle() + "\n" +
-//                                "Author: " + posts.get(j).getAuthor() + "\n" +
-//                                "Updated: " + posts.get(j).getDate_updated() + "\n" );
-//                }
-
                 ListView listView = (ListView) findViewById(R.id.listView);
                 CustomListAdapter customListAdapter = new CustomListAdapter(MainActivity.this, R.layout.card_layout_main, posts);
                 listView.setAdapter(customListAdapter);
+
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Log.d(TAG, "onItemClick: clicked:" + posts.get(position));
+                        Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
+                        intent.putExtra("@string/posts_url", posts.get(position).getPostURL());
+                        intent.putExtra("@string/posts_thumbnail", posts.get(position).getThumbnailURL());
+                        intent.putExtra("@string/posts_title", posts.get(position).getTitle());
+                        intent.putExtra("@string/posts_author", posts.get(position).getAuthor());
+                        intent.putExtra("@string/posts_updated", posts.get(position).getDate_updated());
+                        startActivity(intent);
+                    }
+                });
+
 //                adapter = new RecyclerAdapter(MainActivity.this, posts);
 //                recyclerView.setAdapter(adapter);
             }
@@ -149,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Feed> call, Throwable t) {
                 Log.e(TAG, "onFailure: Unable to Retrieve RSS: " + t.getMessage());
-                Toast.makeText(MainActivity.this, "An Error Occurred", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "An Error occured", Toast.LENGTH_SHORT).show();
             }
         });
     }
