@@ -1,21 +1,17 @@
 package com.application.emoji.redditapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.application.emoji.redditapp.Comments.CommentsActivity;
 import com.application.emoji.redditapp.model.Feed;
 import com.application.emoji.redditapp.model.entry.Entry;
 
@@ -154,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Feed> call, Throwable t) {
                 Log.e(TAG, "onFailure: Unable to Retrieve RSS: " + t.getMessage());
-                Toast.makeText(MainActivity.this, "An Error occured", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "An Error occurred", Toast.LENGTH_SHORT).show();
             }
         });
     }

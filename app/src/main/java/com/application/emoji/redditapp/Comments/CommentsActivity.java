@@ -1,16 +1,23 @@
-package com.application.emoji.redditapp;
+package com.application.emoji.redditapp.Comments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.application.emoji.redditapp.ExtractXML;
+import com.application.emoji.redditapp.FeedAPI;
+import com.application.emoji.redditapp.R;
+import com.application.emoji.redditapp.model.Feed;
+import com.application.emoji.redditapp.model.entry.Entry;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -20,12 +27,22 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
+
 /**
  * Created by Sahil on 27-01-2018.
  */
 
 public class CommentsActivity extends AppCompatActivity {
     private static final String TAG = "CommentsActivity";
+    private static final String BASE_URL = "https://www.reddit.com/r/";
 
     private static String postURL;
     private static String postThumbnailURL;
@@ -33,6 +50,10 @@ public class CommentsActivity extends AppCompatActivity {
     private static String postTitle;
     private static String postUpdated;
     private int defaultImage;
+
+    private ArrayList<Comment> mComments;
+    private String currentFeed;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +61,37 @@ public class CommentsActivity extends AppCompatActivity {
 
         setupImageLoader();
         initPost();
+        init();
+
     }
 
+    private void init()
+    {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(SimpleXmlConverterFactory.create())
+                .build();
+
+        FeedAPI feedAPI = retrofit.create(FeedAPI.class);
+        Call<Feed> call = feedAPI.getFeed(currentFeed);
+
+        call.enqueue(new Callback<Feed>() {
+            @Override
+            public void onResponse(Call<Feed> call, Response<Feed> response) {
+                List<Entry> entries = response.body().getEntries();
+                for(int i = 0; i < entries.size(); i++){
+                    ExtractXML extract = new ExtractXML(entries.get(i).getContent(), "<div class=\"md\"><p>", "</p>");
+                    extract.start();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Feed> call, Throwable t) {
+                Log.e(TAG, "onFailure: Unable to Retrieve RSS: " + t.getMessage());
+                Toast.makeText(CommentsActivity.this, "An Error occurred", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     private void initPost(){
         Intent incomingIntent = getIntent();
         postURL = incomingIntent.getStringExtra("@string/posts_url");
@@ -60,8 +110,10 @@ public class CommentsActivity extends AppCompatActivity {
         title.setText(postTitle);
         author.setText(postAuthor);
         updated.setText(postUpdated);
-
         displayImage(postThumbnailURL, thumbnail, progressBar);
+
+        String[] splitURL = postURL.split(BASE_URL);
+        currentFeed = splitURL[1];
     }
 
     private void displayImage(String imageURL, ImageView imageView, final ProgressBar progressBar){
