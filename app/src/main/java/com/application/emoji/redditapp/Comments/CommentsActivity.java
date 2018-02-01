@@ -63,9 +63,10 @@ public class CommentsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-        mProgressBar = (ProgressBar)findViewById(R.id.commentProgressBar);
-        //mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar = (ProgressBar)findViewById(R.id.commentsLoadingProgressBar);
+
         progressText = (TextView) findViewById(R.id.progressText);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         setupImageLoader();
         initPost();
@@ -121,7 +122,8 @@ public class CommentsActivity extends AppCompatActivity {
                 mListView = (ListView)findViewById(R.id.commentsListView);
                 CommentsListAdapter commentsListAdapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comments_layout, mComments);
                 mListView.setAdapter(commentsListAdapter);
-                //mProgressBar.setVisibility(View.GONE);
+
+                mProgressBar.setVisibility(View.GONE);
                 progressText.setText("");
             }
 

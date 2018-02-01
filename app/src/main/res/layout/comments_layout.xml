@@ -57,7 +57,6 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:id="@+id/commentProgressBar"
-                android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"/>
 

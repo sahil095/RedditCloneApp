@@ -94,14 +94,15 @@ public class CommentsListAdapter extends ArrayAdapter<Comment> {
             else{
                 holder = (ViewHolder) convertView.getTag();
                 //result = convertView;
-                //holder.mProgressBar.setVisibility(View.VISIBLE);
+                holder.mProgressBar.setVisibility(View.VISIBLE);
             }
 
+            lastPosition = position;
 
             holder.comment.setText(comment);
             holder.author.setText(author);
             holder.date_updated.setText(date_updated);
-            //holder.mProgressBar.setVisibility(View.GONE);
+            holder.mProgressBar.setVisibility(View.GONE);
 
             return convertView;
         }catch (IllegalArgumentException e){
