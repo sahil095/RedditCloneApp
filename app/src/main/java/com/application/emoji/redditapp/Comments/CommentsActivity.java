@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,10 @@ public class CommentsActivity extends AppCompatActivity {
     private static String postUpdated;
     private int defaultImage;
 
+    private ProgressBar mProgressBar;
+    private TextView progressText;
+
+    private ListView mListView;
     private ArrayList<Comment> mComments;
     private String currentFeed;
 
@@ -58,6 +63,9 @@ public class CommentsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+        mProgressBar = (ProgressBar)findViewById(R.id.commentProgressBar);
+        //mProgressBar.setVisibility(View.VISIBLE);
+        progressText = (TextView) findViewById(R.id.progressText);
 
         setupImageLoader();
         initPost();
@@ -78,11 +86,43 @@ public class CommentsActivity extends AppCompatActivity {
         call.enqueue(new Callback<Feed>() {
             @Override
             public void onResponse(Call<Feed> call, Response<Feed> response) {
+                mComments = new ArrayList<>();
                 List<Entry> entries = response.body().getEntries();
                 for(int i = 0; i < entries.size(); i++){
                     ExtractXML extract = new ExtractXML(entries.get(i).getContent(), "<div class=\"md\"><p>", "</p>");
-                    extract.start();
+                    List<String> commentDetails = extract.start();
+
+                    try{
+                        mComments.add(new Comment(
+                                commentDetails.get(0),
+                                entries.get(i).getAuthor().getName(),
+                                entries.get(i).getUpdated(),
+                                entries.get(i).getId()
+                            ));
+                    }catch (IndexOutOfBoundsException e){
+                        mComments.add(new Comment(
+                                "Error reading comment",
+                                "NONE",
+                                "NONE",
+                                "NONE"
+                        ));
+                        Log.e(TAG, "onResponse: IndexOutOfBoundsException" + e.getMessage() );
+                    }
+                    catch (NullPointerException e){
+                        mComments.add(new Comment(
+                                commentDetails.get(0),
+                                "NONE",
+                                entries.get(i).getUpdated(),
+                                entries.get(i).getId()
+                        ));;
+                        Log.e(TAG, "onResponse: NullPointerException" + e.getMessage() );
+                    }
                 }
+                mListView = (ListView)findViewById(R.id.commentsListView);
+                CommentsListAdapter commentsListAdapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comments_layout, mComments);
+                mListView.setAdapter(commentsListAdapter);
+                //mProgressBar.setVisibility(View.GONE);
+                progressText.setText("");
             }
 
             @Override

@@ -79,7 +79,7 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
         try{
 
             //create the view result for showing the animation
-            final View result;
+           // final View result;
 
             //ViewHolder object
             final ViewHolder holder;
@@ -94,24 +94,18 @@ public class CustomListAdapter  extends ArrayAdapter<Post> {
                 holder.date_updated = (TextView) convertView.findViewById(R.id.cardUpdated);
                 holder.mProgressBar = (ProgressBar) convertView.findViewById(R.id.cardProgressDialogue);
 
-                result = convertView;
-
                 convertView.setTag(holder);
             }
             else{
                 holder = (ViewHolder) convertView.getTag();
-                result = convertView;
+
             }
 
-
-//            Animation animation = AnimationUtils.loadAnimation(mContext,
-//                    (position > lastPosition) ? R.anim.load_down_anim : R.anim.load_up_anim);
-//            result.startAnimation(animation);
-//            lastPosition = position;
 
             holder.title.setText(title);
             holder.author.setText(author);
             holder.date_updated.setText(date_updated);
+
 
             //create the imageloader object
             ImageLoader imageLoader = ImageLoader.getInstance();
