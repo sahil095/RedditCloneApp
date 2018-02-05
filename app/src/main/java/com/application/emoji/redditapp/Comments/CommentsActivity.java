@@ -1,5 +1,6 @@
 package com.application.emoji.redditapp.Comments;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 import com.application.emoji.redditapp.ExtractXML;
 import com.application.emoji.redditapp.FeedAPI;
 import com.application.emoji.redditapp.R;
+import com.application.emoji.redditapp.WebViewActivity;
 import com.application.emoji.redditapp.model.Feed;
 import com.application.emoji.redditapp.model.entry.Entry;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -87,6 +90,7 @@ public class CommentsActivity extends AppCompatActivity {
         call.enqueue(new Callback<Feed>() {
             @Override
             public void onResponse(Call<Feed> call, Response<Feed> response) {
+                //Log.d(TAG, "onResponse: feed: " + response.body().toString());
                 mComments = new ArrayList<>();
                 List<Entry> entries = response.body().getEntries();
                 for(int i = 0; i < entries.size(); i++){
@@ -123,6 +127,13 @@ public class CommentsActivity extends AppCompatActivity {
                 CommentsListAdapter commentsListAdapter = new CommentsListAdapter(CommentsActivity.this, R.layout.comments_layout, mComments);
                 mListView.setAdapter(commentsListAdapter);
 
+                mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        getUserComment();
+                    }
+                });
+
                 mProgressBar.setVisibility(View.GONE);
                 progressText.setText("");
             }
@@ -156,6 +167,34 @@ public class CommentsActivity extends AppCompatActivity {
 
         String[] splitURL = postURL.split(BASE_URL);
         currentFeed = splitURL[1];
+
+        btnReply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getUserComment();
+            }
+        });
+
+        thumbnail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    Intent intent = new Intent(CommentsActivity.this, WebViewActivity.class);
+                intent.putExtra("url", postURL);
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void getUserComment(){
+        final Dialog dialog = new Dialog(CommentsActivity.this);
+        dialog.setTitle("dialog");
+        dialog.setContentView(R.layout.comment_dialog);
+
+        int width = (int) (getResources().getDisplayMetrics().widthPixels*0.95);
+        int height = (int) (getResources().getDisplayMetrics().heightPixels*0.70);
+
+        dialog.getWindow().setLayout(width, height);
+        dialog.show();
     }
 
     private void displayImage(String imageURL, ImageView imageView, final ProgressBar progressBar){

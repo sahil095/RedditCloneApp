@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Log.d(TAG, "onCreate: Success");
 
         btnRefreshFeed = (Button) findViewById(R.id.btnRefresh);
         mFeedName = (EditText) findViewById(R.id.etFeedName);
@@ -79,11 +80,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Feed> call, Response<Feed> response) {
                 //Log.d(TAG, "onResponse: feed: " + response.body().toString());
-                Log.d(TAG, "onResponse: Server Response: " + response.toString());
+                //Log.d(TAG, "onResponse: Server Response: " + response.toString());
 
                 List<Entry> entries = response.body().getEntries();
 
-                Log.d(TAG, "onResponse: entries: " + response.body().getEntries());
+                //Log.d(TAG, "onResponse: entries: " + response.body().getEntries());
 
                 final ArrayList<Post> posts = new ArrayList<>();
 
