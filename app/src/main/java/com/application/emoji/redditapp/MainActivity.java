@@ -3,7 +3,10 @@ package com.application.emoji.redditapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -11,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.application.emoji.redditapp.Account.LoginActivity;
 import com.application.emoji.redditapp.Comments.CommentsActivity;
 import com.application.emoji.redditapp.model.Feed;
 import com.application.emoji.redditapp.model.entry.Entry;
@@ -40,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Log.d(TAG, "onCreate: Success");
-
         btnRefreshFeed = (Button) findViewById(R.id.btnRefresh);
         mFeedName = (EditText) findViewById(R.id.etFeedName);
+
+        setupToolBar();
 
         btnRefreshFeed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +70,24 @@ public class MainActivity extends AppCompatActivity {
 //        recyclerView.setLayoutManager(llm);
 
     }
+
+
+    private void setupToolBar(){
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
+
+    }
+
     private void init(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -133,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        Log.d(TAG, "onItemClick: clicked:" + posts.get(position));
                         Intent intent = new Intent(MainActivity.this, CommentsActivity.class);
                         intent.putExtra("@string/posts_url", posts.get(position).getPostURL());
                         intent.putExtra("@string/posts_thumbnail", posts.get(position).getThumbnailURL());
@@ -154,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "An Error occurred", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_menu, menu);
+        return true;
     }
 
 }

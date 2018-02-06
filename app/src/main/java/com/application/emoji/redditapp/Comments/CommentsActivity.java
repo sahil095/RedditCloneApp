@@ -6,7 +6,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -16,8 +19,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.application.emoji.redditapp.Account.LoginActivity;
 import com.application.emoji.redditapp.ExtractXML;
 import com.application.emoji.redditapp.FeedAPI;
+import com.application.emoji.redditapp.MainActivity;
 import com.application.emoji.redditapp.R;
 import com.application.emoji.redditapp.WebViewActivity;
 import com.application.emoji.redditapp.model.Feed;
@@ -67,13 +72,31 @@ public class CommentsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
         mProgressBar = (ProgressBar)findViewById(R.id.commentsLoadingProgressBar);
-
         progressText = (TextView) findViewById(R.id.progressText);
+
+        setupToolBar();
         mProgressBar.setVisibility(View.VISIBLE);
 
         setupImageLoader();
         initPost();
         init();
+
+    }
+
+
+    private void setupToolBar(){
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                Intent intent = new Intent(CommentsActivity.this, LoginActivity.class);
+                startActivity(intent);
+                return false;
+            }
+        });
 
     }
 
@@ -245,5 +268,11 @@ public class CommentsActivity extends AppCompatActivity {
         // END - UNIVERSAL IMAGE LOADER SETUP
 
         defaultImage = CommentsActivity.this.getResources().getIdentifier("@drawable/image_failed",null,CommentsActivity.this.getPackageName());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.navigation_menu, menu);
+        return true;
     }
 }

@@ -8,9 +8,24 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:id="@+id/relLayoutToolBar">
+
+            <android.support.v7.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/toolbar_main">
+
+            </android.support.v7.widget.Toolbar>
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/postHeadingRelLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relLayoutToolBar">
 
             <ImageView
                 android:layout_width="70dp"

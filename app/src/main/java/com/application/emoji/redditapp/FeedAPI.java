@@ -1,10 +1,18 @@
 package com.application.emoji.redditapp;
 
+import com.application.emoji.redditapp.Account.CheckLogin;
 import com.application.emoji.redditapp.model.Feed;
+
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.HEAD;
+import retrofit2.http.Header;
+import retrofit2.http.HeaderMap;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by Sahil on 27-12-2017.
@@ -21,4 +29,15 @@ public interface FeedAPI {
     //Static
 //    @GET("earthporn/.rss")
 //    Call<Feed> getFeed();
+
+    @POST("{user}")
+    Call<CheckLogin> signIn(
+
+            @HeaderMap Map <String, String> headers,
+            @Path("user") String username,
+            @Query("user") String user,
+            @Query("passwd") String password,
+            @Query("api_type") String type
+    );
+
 }
