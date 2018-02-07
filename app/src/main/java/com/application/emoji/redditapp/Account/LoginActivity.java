@@ -1,6 +1,8 @@
 package com.application.emoji.redditapp.Account;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -32,6 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mPassword;
     public static final String BASE_URL = "https://www.reddit.com/api/login/";
     private static final String TAG = "LoginActivity";
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         Button btnLogin = findViewById(R.id.btn_Login);
         mPassword = findViewById(R.id.input_password);
         mUsername = findViewById(R.id.input_username);
-        final ProgressBar mProgressBar = findViewById(R.id.loginProgressBar);
+        mProgressBar = findViewById(R.id.loginProgressBar);
         mProgressBar.setVisibility(View.GONE);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
@@ -58,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void login(String username, String password){
+    private void login(final String username, String password){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -73,8 +76,25 @@ public class LoginActivity extends AppCompatActivity {
         call.enqueue(new Callback<CheckLogin>() {
             @Override
             public void onResponse(Call<CheckLogin> call, Response<CheckLogin> response) {
-                Log.d(TAG, "onResponse: feed: " + response.body().toString());
-                Log.d(TAG, "onResponse: Server Response: " + response.toString());
+//                Log.d(TAG, "onResponse: feed: " + response.body().toString());
+//                Log.d(TAG, "onResponse: Server Response: " + response.toString());
+
+                try{
+                    String modhash = response.body().getJson().getData().getModhash();
+                    String cookie = response.body().getJson().getData().getCookie();
+
+                    if(!modhash.equals("")) {
+                        setSessionParams(username, modhash, cookie);
+                        mProgressBar.setVisibility(View.GONE);
+                        mUsername.setText("");
+                        mPassword.setText("");
+                        Toast.makeText(LoginActivity.this, "You're logged in", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                }catch (NullPointerException e){
+                    mProgressBar.setVisibility(View.GONE);
+                    Log.d(TAG, "onResponse: Server NullPointerException: " + response.toString());
+                }
             }
 
             @Override
@@ -84,4 +104,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+    private void setSessionParams(String username, String modhash, String cookie){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString("@string/SessionUsername", username);
+        editor.commit();
+        editor.putString("@string/SessionModhash", modhash);
+        editor.commit();
+        editor.putString("@string/SessionCookie", cookie);
+        editor.commit();
+    }
 }
+

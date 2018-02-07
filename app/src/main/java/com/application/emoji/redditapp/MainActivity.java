@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
                                 entries.get(i).getAuthor().getName(),
                                 entries.get(i).getUpdated(),
                                 postContent.get(0),
-                                postContent.get(lastPosition)
+                                postContent.get(lastPosition),
+                                entries.get(i).getId()
                         ));
                     }catch (NullPointerException e){
                         posts.add(new Post(
@@ -142,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
                                 "None",
                                 entries.get(i).getUpdated(),
                                 postContent.get(0),
-                                postContent.get(lastPosition)
+                                postContent.get(lastPosition),
+                                entries.get(i).getId()
                         ));
                         Log.e(TAG, "onResponse: NullPointerException: " + e.getMessage() );
                     }
@@ -161,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("@string/posts_title", posts.get(position).getTitle());
                         intent.putExtra("@string/posts_author", posts.get(position).getAuthor());
                         intent.putExtra("@string/posts_updated", posts.get(position).getDate_updated());
+                        intent.putExtra("@string/posts_id", posts.get(position).getId());
                         startActivity(intent);
                     }
                 });
