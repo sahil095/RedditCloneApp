@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
 
         editor.putString("@string/SessionUsername", username);
-        editor.commit();
+        editor.apply();
         editor.putString("@string/SessionModhash", modhash);
         editor.commit();
         editor.putString("@string/SessionCookie", cookie);

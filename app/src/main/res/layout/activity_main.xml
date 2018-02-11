@@ -25,7 +25,8 @@
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/toolbar_main">
+            android:id="@+id/toolbar_main"
+            android:background="@drawable/blue_borders">
 
         </android.support.v7.widget.Toolbar>
 
@@ -42,7 +43,7 @@
         <EditText
             android:layout_width="0dp"
             android:layout_height="60dp"
-            android:layout_weight="75"
+            android:layout_weight="70"
             android:textSize="15sp"
             android:hint="Type a sub reddit"
             android:layout_gravity="bottom"
@@ -50,12 +51,13 @@
             android:id="@+id/etFeedName"/>
         <Button
             android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight="25"
+            android:layout_height="wrap_content"
+            android:layout_weight="30"
             android:text="Refresh Feed"
             android:layout_gravity="center"
             android:gravity="center"
-            android:id="@+id/btnRefresh"/>
+            android:id="@+id/btnRefresh"
+            android:background="@drawable/blue_rounded_button"/>
     </LinearLayout>
 
     <ListView

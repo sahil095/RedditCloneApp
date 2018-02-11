@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.application.emoji.redditapp.Account.CheckLogin;
 import com.application.emoji.redditapp.Account.LoginActivity;
 import com.application.emoji.redditapp.ExtractXML;
 import com.application.emoji.redditapp.FeedAPI;
@@ -40,12 +41,14 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 /**
@@ -55,6 +58,7 @@ import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 public class CommentsActivity extends AppCompatActivity {
     private static final String TAG = "CommentsActivity";
     private static final String BASE_URL = "https://www.reddit.com/r/";
+    private static final String COMMENT_URL = "https://www.reddit.com/api/";
 
     private static String postURL;
     private static String postThumbnailURL;
@@ -79,15 +83,19 @@ public class CommentsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-        mProgressBar = (ProgressBar)findViewById(R.id.commentsLoadingProgressBar);
-        progressText = (TextView) findViewById(R.id.progressText);
+        mProgressBar = findViewById(R.id.commentsLoadingProgressBar);
+        progressText =  findViewById(R.id.progressText);
 
         setupToolBar();
+
         getSessionsParams();
+
         mProgressBar.setVisibility(View.VISIBLE);
 
         setupImageLoader();
+
         initPost();
+
         init();
 
     }
@@ -162,7 +170,7 @@ public class CommentsActivity extends AppCompatActivity {
                 mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        getUserComment(postId);
+                        getUserComment(mComments.get(position).getId());
                     }
                 });
 
@@ -187,12 +195,12 @@ public class CommentsActivity extends AppCompatActivity {
         postId = incomingIntent.getStringExtra("@string/post_id");
 
 
-        TextView title = (TextView) findViewById(R.id.postTitle);
-        TextView author = (TextView) findViewById(R.id.postAuthor);
-        TextView updated = (TextView) findViewById(R.id.postUpdated);
-        ImageView thumbnail = (ImageView) findViewById(R.id.postThumbnail);
-        Button btnReply = (Button) findViewById(R.id.btnPostReply);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.postLoadingProgressBar);
+        TextView title = findViewById(R.id.postTitle);
+        TextView author =  findViewById(R.id.postAuthor);
+        TextView updated =  findViewById(R.id.postUpdated);
+        ImageView thumbnail = findViewById(R.id.postThumbnail);
+        Button btnReply = findViewById(R.id.btnPostReply);
+        ProgressBar progressBar = findViewById(R.id.postLoadingProgressBar);
 
         title.setText(postTitle);
         author.setText(postAuthor);
@@ -212,14 +220,14 @@ public class CommentsActivity extends AppCompatActivity {
         thumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    Intent intent = new Intent(CommentsActivity.this, WebViewActivity.class);
+                Intent intent = new Intent(CommentsActivity.this, WebViewActivity.class);
                 intent.putExtra("url", postURL);
                 startActivity(intent);
             }
         });
     }
 
-    private void getUserComment(String post_id){
+    private void getUserComment(final String post_id){
         final Dialog dialog = new Dialog(CommentsActivity.this);
         dialog.setTitle("dialog");
         dialog.setContentView(R.layout.comment_dialog);
@@ -230,17 +238,64 @@ public class CommentsActivity extends AppCompatActivity {
         dialog.getWindow().setLayout(width, height);
         dialog.show();
 
-        Button btnPostReply = dialog.findViewById(R.id.btnPostReply);
+        Button btnPostComment = dialog.findViewById(R.id.btnPostComment);
         final EditText comment = dialog.findViewById(R.id.dialogComment);
 
-        btnPostReply.setOnClickListener(new View.OnClickListener() {
+        btnPostComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 //post comments retrofit
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(COMMENT_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                FeedAPI feedAPI = retrofit.create(FeedAPI.class);
+
+                HashMap<String, String> headerMap = new HashMap<>();
+                headerMap.put("User-Agent", username);
+                headerMap.put("X-Modhash", modhash);
+                headerMap.put("cookie", "reddit_session=" + cookie);
+
+//                Log.d(TAG, "btnPostComment:  \n" +
+//                        "username: " + username + "\n" +
+//                        "modhash: " + modhash + "\n" +
+//                        "cookie: " + cookie + "\n"
+//                );
+
+                String theComment = comment.getText().toString();
+
+                Call<CheckComment> call = feedAPI.submitComment(headerMap, "comment", post_id, theComment);
+
+                call.enqueue(new Callback<CheckComment>() {
+                    @Override
+                    public void onResponse(Call<CheckComment> call, Response<CheckComment> response) {
+                        try{
+                            String postSuccess = response.body().getSuccess();
+                            if (postSuccess.equals("true")){
+                                dialog.dismiss();
+                                Toast.makeText(CommentsActivity.this, "Post Successful", Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(CommentsActivity.this, "An Error Occurred. Did you sign in?", Toast.LENGTH_SHORT).show();
+                            }
+
+                        }catch (NullPointerException e){
+                            Log.e(TAG, "onResponse: NullPointerException: " +e.getMessage() );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<CheckComment> call, Throwable t) {
+                        Log.e(TAG, "onFailure: Unable to retrieve RSS: " + t.getMessage() );
+                        Toast.makeText(CommentsActivity.this, "An Error Occured", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
             }
         });
     }
+
 
     private void displayImage(String imageURL, ImageView imageView, final ProgressBar progressBar){
 
@@ -306,7 +361,7 @@ public class CommentsActivity extends AppCompatActivity {
 
     private void getSessionsParams(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(CommentsActivity.this);
-
+        
         username = preferences.getString("@string/SessionUsername", "");
         modhash = preferences.getString("@string/SessionModhash", "");
         cookie = preferences.getString("@string/SessionCookie", "");

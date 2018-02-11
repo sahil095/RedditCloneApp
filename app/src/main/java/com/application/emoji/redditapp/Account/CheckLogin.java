@@ -3,9 +3,6 @@ package com.application.emoji.redditapp.Account;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by Sahil on 07-02-2018.
- */
 
 public class CheckLogin {
 

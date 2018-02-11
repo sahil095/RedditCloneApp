@@ -15,7 +15,8 @@
             <android.support.v7.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/toolbar_main">
+                android:id="@+id/toolbar_main"
+                android:background="@drawable/blue_borders">
 
             </android.support.v7.widget.Toolbar>
 
@@ -25,7 +26,8 @@
             android:id="@+id/postHeadingRelLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/relLayoutToolBar">
+            android:layout_below="@+id/relLayoutToolBar"
+            android:background="@drawable/black_border">
 
             <ImageView
                 android:layout_width="70dp"
@@ -45,7 +47,8 @@
                 android:textSize="8sp"
                 android:layout_alignParentRight="true"
                 android:layout_alignBottom="@id/postThumbnail"
-                android:layout_marginRight="10dp"/>
+                android:layout_marginRight="10dp"
+                android:background="@drawable/blue_rounded_button"/>
 
 
             <RelativeLayout
@@ -55,7 +58,7 @@
                 android:layout_marginLeft="10dp">
 
                 <TextView
-                    android:textStyle="bold"
+                    android:textColor="@color/colorDarkGrey"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/postTitle"
@@ -95,13 +98,6 @@
 
         </RelativeLayout>
 
-        <ProgressBar
-            style="?android:attr/progressBarStyle"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:id="@+id/commentsLoadingProgressBar"
-            android:layout_centerInParent="true" />
-
         <TextView
             android:layout_alignBottom="@id/commentsLoadingProgressBar"
             android:layout_alignRight="@id/commentsLoadingProgressBar"
@@ -120,6 +116,13 @@
             android:id="@+id/commentsListView">
 
         </ListView>
+
+        <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/commentsLoadingProgressBar"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
